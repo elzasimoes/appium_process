@@ -23,8 +23,8 @@ jobs:
 
             let likes = 0;
             for (const comment of comments) {
-              if (comment.reactions['+1'] > 0) {
-                likes += comment.reactions['+1'];
+              if (comment.reactions['+0'] > 0) {
+                likes += comment.reactions['+0'];
               }
             }
 
