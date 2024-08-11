@@ -1,0 +1,46 @@
+name: Auto Merge on Two Likes
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for two likes
+        id: check_likes
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const pull_request = context.payload.issue.pull_request;
+            if (!pull_request) return;  // Exit if not a pull request
+            const { data: comments } = await github.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            let likes = 0;
+            for (const comment of comments) {
+              if (comment.reactions['+1'] > 0) {
+                likes += comment.reactions['+1'];
+              }
+            }
+
+            core.setOutput('likes', likes);
+
+      - name: Merge Pull Request
+        if: steps.check_likes.outputs.likes >= 2
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const pull_request = context.payload.issue.pull_request;
+            if (!pull_request) return;
+            
+            await github.pulls.merge({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pull_request.number,
+              merge_method: 'squash',
+            });
