@@ -5,7 +5,7 @@ import time
 def start_appium_server(port, log_file):
     command = [
         'appium',
-        '-p', str(port),  # Define a porta para o servidor Appium
+        '-p', str(port), 
         '--log', log_file # Arquivo de log para saída do Appium
     ]
     
